@@ -1,40 +1,73 @@
-// // TODO: Include packages needed for this application
-
-// // TODO: Create an array of questions for user input
-// const questions = [];
-
-// // TODO: Create a function to write README file
-// function writeToFile(fileName, data) {}
-
-// // TODO: Create a function to initialize app
-// function init() {}
-
-// // Function call to initialize app
-// init();
-
 
 const inquirer = require('inquirer');
 const fs = require('fs');
 
+const licenseBadgeMap = {
+  "AGPL-3.0": {
+    name: "AGPL v3",
+    badgeUrl: "https://img.shields.io/badge/License-AGPL_v3-blue.svg",
+    licensePage: "https://www.gnu.org/licenses/agpl-3.0"
+  },
+  "MIT": {
+    name: "MIT",
+    badgeUrl: "https://img.shields.io/badge/License-MIT-yellow.svg",
+    licensePage: "https://opensource.org/licenses/MIT"
+  },
+  "GPL-3.0": {
+    name: "GPL v3",
+    badgeUrl:"https://img.shields.io/badge/License-GPLv3-blue.svg",
+    LicensePage:"https://www.gnu.org/licenses/gpl-3.0"
+  }
+
+}
+
 const buildReadmeTemplate = (data) => `
   # ${data.title}
 
+  ## [Table of content](#java-something)
+  * [License](#license)
+  * [[My Github](https://github.com/deadpool3413)]
+  * [Description](#description)
+  * [Testing](#testing)
+  * [Contributions](#contributions)
+  * [Additional information on Repo](#additional-information-on-repo)
+
+  ## License
+  [![License: ${licenseBadgeMap[data.license].name}](${licenseBadgeMap[data.license].badgeUrl})](${licenseBadgeMap[data.license].licensePage})
+
   ## [My Github](https://github.com/${data.github})
 
-  ### ${data.description}
+  ## Description
+  ##### ${data.description}
+
+  ## Testing
+  ### To run the test write command ${data.testing}
+
+  ## Contributions
+  ##### ${data.contributions}
+
+  ## Additional information on Repo
+  ##### ${data.usage}
+
+  ## Questions
+
+  ##### Check out my GitHub profile at https://github.com/${data.github}
+  ##### Still have questions? Reach me at ${data.email}
+
+
 `;
 
 const promptUser = () => {
   return inquirer.prompt([
     {
       type: 'input',
-      name: 'name',
-      message: 'What is your name? (Required)',
-      validate: (nameInput) => {
-        if (nameInput) {
+      name: 'email',
+      message: 'What is your email? (Required)',
+      validate: (emailInput) => {
+        if (emailInput) {
           return true;
         } else {
-          console.log('Please enter your name!');
+          console.log('Please enter your email!');
           return false;
         }
       },
@@ -84,21 +117,46 @@ const promptUser = () => {
     {
       type: 'list',
       name: 'license',
-      message:  ''
-    }
-    // {
-    //   type: 'confirm',
-    //   name: 'confirmAbout',
-    //   message:
-    //     'Would you like to enter some information about yourself for an "About" section?',
-    //   default: true,
-    // },
-    // {
-    //   type: 'input',
-    //   name: 'about',
-    //   message: 'Provide some information about yourself:',
-    //   when: ({ confirmAbout }) => confirmAbout,
-    // },
+      message:  'Select a license for your project. (Required)',
+      choices: ["MIT", "AGPL-3.0", "GPL-3.0", "N/A"],
+      validate: (licenseList) =>{
+        if (licenseList){
+          return true;
+        }else{
+          console.log('Please select a license option!')
+          return false;
+        }
+      }
+    },
+    //Question #6
+    {
+      type: 'list',
+      name: 'testing',
+      message: 'What command should be run to run test? (required)',
+      choices: ["npm test", "yarn test"],
+      validate: (testingList) => {
+        if (testingList){
+          return true;
+        }else{
+          console.log('Please select a command to run tests!');
+          return false;
+        }
+      }
+    },
+
+    //Question #7
+    {
+      type: 'input',
+      name: 'contributions',
+      message: 'What exactly does the user need to know about contributing to this Repo? (Optional)'
+    },
+    //Question #8
+    {
+      type: 'input',
+      name: 'usage',
+      message: 'What does the user need to know about using this Repo? (Optional)'
+    },
+
   ]);
 };
 
